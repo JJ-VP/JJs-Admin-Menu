@@ -17,5 +17,5 @@ Save the init.sqf then go back to JJ's Admin Menu >> addons turn the main folder
 - ```player call JJMC_fnc_isAdmin``` will not function on a live server as only server knows that JJMC_fnc_isAdmin exists.
 
 <br><br>
-*This content is covered under ADPL-SA licence (Arma and Dayz Public License Share Alike)* <br>
+*This content is covered under ADPL-SA licence (Arma Public License Share Alike)* <br>
 [<img src="https://www.bohemia.net/assets/img/licenses/APL-SA.png">](https://www.bohemia.net/community/licenses/arma-and-dayz-public-license-share-alike-adpl-sa/)
