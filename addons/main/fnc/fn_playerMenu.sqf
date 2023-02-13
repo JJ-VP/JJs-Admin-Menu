@@ -1,17 +1,21 @@
 /*
- * playerMenu.sqf
+ * fn_playerMenu.sqf
  * Author: JJ
  *
  * Args:
- * 1: the player you want to check if they are an admin <OBJECT>
+ * 1: the player to open the player menu <OBJECT>
  *
  * Return Value:
- * None
+ * 1: true if menu opened, false if menu not opened <BOOL>
  *
  */
 params["_player"];
 
+if (!JJPlayerMenu) exitWith {false};
+
 playerMenuString = "
+
+params['_isAdmin'];
 
 waitUntil{!isNull (findDisplay 46)};
 systemchat 'JJ''s Player Menu Enabled! Press F1 to open it!';
@@ -76,8 +80,7 @@ _keydown = (findDisplay 46) displayAddEventHandler ['KeyDown', 'if (_this select
 	_ctrlbtnZeus ctrlSetText ''Zeus Menu'';
 	_ctrlbtnZeus ctrlSetTooltip ''Open the Zeus menu'';
 	_zeusState = call BIS_fnc_admin;
-	_isAdmin = 
-	if (_zeusState == 2 || player call JJMC_fnc_isAdmin) then {
+	if (JJZeusMenu && (_zeusState == 2 || _isAdmin)) then {
 		_ctrlbtnZeus ctrlAddEventHandler [''ButtonClick'', {
 			params [''_ctrl''];
 			_display = ctrlParent _ctrl;
@@ -91,7 +94,7 @@ _keydown = (findDisplay 46) displayAddEventHandler ['KeyDown', 'if (_this select
 	_ctrlbtnAdmin ctrlSetPosition [0.6, 0.54, 0.15, 0.08];
 	_ctrlbtnAdmin ctrlSetText ''Admin Menu'';
 	_ctrlbtnAdmin ctrlSetTooltip ''Open the Admin Menu'';
-	if (player call JJAM_fnc_isAdmin && JJAdminMenu) then {
+	if (_isAdmin && JJAdminMenu) then {
 		_ctrlbtnAdmin ctrlAddEventHandler [''ButtonClick'', {
 			params [''_ctrl''];
 			_display = ctrlParent _ctrl;
@@ -111,6 +114,9 @@ _keydown = (findDisplay 46) displayAddEventHandler ['KeyDown', 'if (_this select
 
 ";
 
+_isAdmin = _player call JJAM_fnc_isAdmin;
+
 JJAM_playerMenuCode = compileFinal playerMenuString;
 owner _player publicVariableClient "JJAM_playerMenuCode";
-remoteExec ["JJAM_playerMenuCode", _player];
+[_isAdmin] remoteExec ["JJAM_playerMenuCode", _player];
+true

@@ -6,7 +6,7 @@
  * 1: the player you want to check if they are an admin <OBJECT>
  *
  * Return Value:
- * True if player is admin, false if not admin <BOOL>
+ * true if player is admin, false if player is not admin <BOOL>
  *
  */
 
