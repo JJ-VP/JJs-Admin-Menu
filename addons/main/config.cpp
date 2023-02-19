@@ -19,18 +19,11 @@ class CfgFunctions {
 			class playerMenu {};
 			class zeusMenu {};
 			class adminMenu {};
+			class groupMenu {};
+			class notificationMenu {};
 		};
 	}; 
 };
 class cfgMods {
 	author="JJ";
-};
-class cfgNotifications {
-    class Custom {
-        title = "%1";
-        description = "%2";
-        iconPicture="\A3\ui_f\data\map\markers\military\warning_ca.paa";
-        duration = 10;
-        priority = 9;
-    };
 };
