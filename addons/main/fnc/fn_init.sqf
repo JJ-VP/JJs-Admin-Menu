@@ -24,6 +24,7 @@ JJSuperAdminMenu = true;
 // Don't touch anything below here!
 
 JJAM_isAdmin = false;
+JJAM_zeuslist = [];
 
 diag_log text "JJAM: Server Init started";
 publicVariable "JJPlayerMenu";
@@ -32,13 +33,7 @@ publicVariable "JJAdminMenu";
 publicVariable "JJSuperAdminMenu";
 publicVariable "JJAM_isAdmin";
 
-JJAM_zeuslist = [];
-{
-	JJAM_zeuslist pushBack getAssignedCuratorUnit _x;
-} forEach allCurators;
-publicVariable "JJAM_zeuslist";
-
-hintHeader = "<t color='#41f48c' size='2'>JJx Admin Menu</t><br /><t size='0.68'>by JJ</t><br />-------- -_- --------<br /><br />";
+hintHeader = "<t color='#41f48c' size='2' font='PuristaBold'>JJ's Player Menu</t><br />-------- -_- --------<br /><br />";
 publicVariable hintHeader;
 
 JJAM_init = {
@@ -76,19 +71,18 @@ addMissionEventHandler ["PlayerConnected", {
 	params ["_id", "_uid", "_name", "_jip", "_owner", "_idstr"];
 	if (_name == "__SERVER__") exitWith {};
 	_player = _uid call BIS_fnc_getUnitByUID;
-	if (_player call JJAM_fnc_isAdmin) then {
-		JJAM_isAdmin = true;
-	} else {
-		JJAM_isAdmin = false;
-	};
-	if (_player in JJAM_zeuslist) then {
-		JJAM_isZeus = true;
-	} else {
-		JJAM_isZeus = false;
-	};
-	owner _player publicVariableClient "JJAM_isAdmin";
-	owner _player publicVariableClient "JJAM_isZeus";
 	remoteExec ["JJAM_init", _player];
 	diag_log text format ["JJAM: Init player: %1", name _player]
 }];
-true
+
+waitUntil { time > 0 };
+while {true} do {
+	JJAM_zeuslist = [];
+	{
+		JJAM_zeuslist pushBack getAssignedCuratorUnit _x;
+		_x addCuratorEditableObjects [allUnits, true];
+    	_x addCuratorEditableObjects [vehicles, true];
+	} forEach allCurators;
+	publicVariable "JJAM_zeuslist";
+	uiSleep 30;
+};

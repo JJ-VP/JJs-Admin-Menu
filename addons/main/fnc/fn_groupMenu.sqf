@@ -36,9 +36,6 @@ groupMenuString = '
 		ctrlbtnClose ctrlSetTextColor [1, 0, 0, 1];
 		ctrlbtnClose ctrlSetTooltip "Close the menu.";
 		ctrlbtnClose ctrlAddEventHandler ["ButtonClick", {
-			params ["_ctrl"];
-			_display = ctrlParent _ctrl;
-			_display closeDisplay 1;
 			[player] remoteExec ["JJAM_fnc_adminMenu", 2];
 		}];
 		ctrlbtnClose ctrlCommit 0;
@@ -48,27 +45,31 @@ groupMenuString = '
 		ctrlbtnRename ctrlSetText "Rename";
 		ctrlbtnRename ctrlSetTooltip "Select a group and wright the name below";
 		ctrlbtnRename ctrlAddEventHandler ["ButtonClick", {
-			if ((lbCurSel ctrllstGroups == -1) && (lbCurSel ctrllstPlayers == -1)) exitWith {hintSilent "Please select a player or group";};
-			if (ctrlText ctrledtRename == "") exitWith {hintSilent "Please input a name";};
-			if (lbCurSel ctrllstGroups != -1) then {
-				_group = (allGroupsWithPlayers select (lbCurSel ctrllstGroups));
-				_nameArray = [];
-				_name = ctrlText ctrledtRename;
-				_nameArray pushBack _name;
-				_oldName = groupID _group;
-				[_group, _nameArray] remoteExec ["setGroupIDGlobal", 2];
-				[_oldName,_name] spawn {hintSilent parseText format ["Renamed <br /><t color=""#42ebf4"">%1</t> to <t color=""#42ebf4"">%2</t>", _this select 0, _this select 1];uiSleep 3; hintSilent "";};
-			} else {
-				_playerID = ctrllstPlayers lbData lbCurSel ctrllstPlayers;
-				_player = getUserInfo _playerID select 10;
-				_group = group _player;
-				_nameArray = [];
-				_name = ctrlText ctrledtRename;
-				_nameArray pushBack _name;
-				_oldName = groupID _group;
-				hint str(_name);
-				[_group, _nameArray] remoteExec ["setGroupIDGlobal", 2];
-				[_oldName,_name] spawn {hintSilent parseText format ["Renamed <br /><t color=""#42ebf4"">%1</t> to <t color=""#42ebf4"">%2</t>", _this select 0, _this select 1];uiSleep 3; hintSilent "";};
+			with uiNamespace do {
+				if ((lbCurSel ctrllstGroups == -1) && (lbCurSel ctrllstPlayers == -1)) exitWith {hintSilent parseText format ["%1Please select a player or group to rename.", hintHeader];};
+				if (ctrlText ctrledtRename == "") exitWith {hintSilent parseText format ["%1Please input a name.", hintHeader];};
+				if (lbCurSel ctrllstGroups != -1) then {
+					_group = (allGroupsWithPlayers select (lbCurSel ctrllstGroups));
+					_nameArray = [];
+					_name = ctrlText ctrledtRename;
+					_nameArray pushBack _name;
+					_oldName = groupID _group;
+					[_group, _nameArray] remoteExec ["setGroupIDGlobal", 2];
+					hintSilent parseText format ["%1Renamed <br /><t color=""#42ebf4"">%2</t> to <t color=""#42ebf4"">%3</t>", hintHeader, _oldName, _name];
+					player setVariable ["hintTimer", 3];
+				} else {
+					_playerID = ctrllstPlayers lbData lbCurSel ctrllstPlayers;
+					_player = getUserInfo _playerID select 10;
+					_group = group _player;
+					_nameArray = [];
+					_name = ctrlText ctrledtRename;
+					_nameArray pushBack _name;
+					_oldName = groupID _group;
+					hint str(_name);
+					[_group, _nameArray] remoteExec ["setGroupIDGlobal", 2];
+					hintSilent parseText format ["%1Renamed <br /><t color=""#42ebf4"">%2</t> to <t color=""#42ebf4"">%3</t>", hintHeader, _oldName, _name];
+					player setVariable ["hintTimer", 3];
+				};
 			};
 		}];
 		ctrlbtnRename ctrlCommit 0;

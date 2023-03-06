@@ -37,14 +37,11 @@ with uiNamespace do {
 	ctrlbtnClose ctrlSetTextColor [1, 0, 0, 1];
 	ctrlbtnClose ctrlSetTooltip "Close the menu.";
 	ctrlbtnClose ctrlAddEventHandler ["ButtonClick", {
-		params ["_ctrl"];
-		_display = ctrlParent _ctrl;
-		_display closeDisplay 1;
 		[player] remoteExec ["JJAM_fnc_adminMenu", 2];
 	}];
 	ctrlbtnClose ctrlCommit 0;
 	ctrledtTitle ctrlSetPosition [0.249937, 0.42, 0.33, 0.19];
-	ctrledtTitle ctrlSetTooltip "Input the text for the notification. Use \ n for a new line.";
+	ctrledtTitle ctrlSetTooltip "Input the text for the notification. Accepts structured text.";
 	ctrledtTitle ctrlCommit 0;
 	ctrledtDuration ctrlSetPosition [0.6, 0.42, 0.15, 0.08];
 	ctrledtDuration ctrlSetTooltip "Input the duration for the notification.";
@@ -54,12 +51,16 @@ with uiNamespace do {
 	ctrlbtnSend ctrlSetTooltip "Send the notification using the above details.";
 	ctrlbtnSend ctrlAddEventHandler ["ButtonClick", {
 		[] spawn {
-			if (ctrlText ctrledtDuration == "") then {
-				ctrledtDuration ctrlSetText "10";
+			with uiNamespace do {
+				if (ctrlText ctrledtDuration == "") then {
+					ctrledtDuration ctrlSetText "10";
+				};
+				_hintText = parseText format ["<t color=""#41f48c"" size=""2"" font=""PuristaBold"">Admin Message</t><br /><t size=""0.68"">from %1</t><br />-------- -_- --------<br /><br />%2", name player, ctrlText ctrledtTitle];
+				_hintText remoteExec ["hint", 0];
+				{
+					_x setVariable ["hintTimer", parseNumber ctrlText ctrledtDuration]
+				} forEach allPlayers;
 			};
-			ctrlText ctrledtTitle remoteExec ["hintSilent", 0];
-			uiSleep parseNumber ctrlText ctrledtDuration;
-			"" remoteExec ["hintSilent", 0];
 		};
 	}];
 	ctrlbtnSend ctrlCommit 0;

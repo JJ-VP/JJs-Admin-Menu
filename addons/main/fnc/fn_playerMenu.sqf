@@ -40,7 +40,7 @@ createPlayerMenu = {
 		ctrlbtnClose ctrlSetPosition [0.750063, 0.34, 0.0250063, 0.04];
 		ctrlbtnClose ctrlSetText "X";
 		ctrlbtnClose ctrlSetTextColor [1, 0, 0, 1];
-		ctrlbtnClose ctrlSetTooltip "Close the menu.";
+		ctrlbtnClose ctrlSetTooltip "Close the menu";
 		ctrlbtnClose ctrlAddEventHandler ["ButtonClick", {
 			params ["_ctrl"];
 			_display = ctrlParent _ctrl;
@@ -49,12 +49,21 @@ createPlayerMenu = {
 		ctrlbtnClose ctrlCommit 0;
 		ctrlbtnBackpack ctrlSetPosition [0.249937, 0.42, 0.150038, 0.08];
 		ctrlbtnBackpack ctrlSetText "Toggle Backpack";
-		ctrlbtnBackpack ctrlSetTooltip "Toggle the visibility of your backpack.";
+		ctrlbtnBackpack ctrlSetTooltip "Toggle the visibility of your backpack";
 		ctrlbtnBackpack ctrlAddEventHandler ["ButtonClick", {
-			if (isObjectHidden unitBackpack player) then {
-				[unitBackpack player, false] remoteExec ["hideObjectGlobal", 2];
+			if (!isNull unitBackpack player) then {
+				if (isObjectHidden unitBackpack player) then {
+					[unitBackpack player, false] remoteExec ["hideObjectGlobal", 2];
+					hintSilent parseText format ["%1Made backpack <t color=""#42ebf4"">visible</t>", hintHeader];
+					player setVariable ["hintTimer", 3];
+				} else {
+					[unitBackpack player, true] remoteExec ["hideObjectGlobal", 2];
+					hintSilent parseText format ["%1Made backpack <t color=""#42ebf4"">invisible</t>", hintHeader];
+					player setVariable ["hintTimer", 3];
+				};
 			} else {
-				[unitBackpack player, true] remoteExec ["hideObjectGlobal", 2];
+				hintSilent parseText format ["%1You do not have a backpack eqipped", hintHeader];
+				player setVariable ["hintTimer", 3];
 			};
 		}];
 		ctrlbtnBackpack ctrlCommit 0;
@@ -64,51 +73,75 @@ createPlayerMenu = {
 		ctrlbtnGrass ctrlAddEventHandler ["ButtonClick", {
 			if (getTerrainGrid < 50) then {
 				setTerrainGrid 50;
+				hintSilent parseText format ["%1Grass <t color=""#42ebf4"">disabled</t>", hintHeader];
+				player setVariable ["hintTimer", 3];
 			} else {
 				setTerrainGrid 12.5;
+				hintSilent parseText format ["%1Grass <t color=""#42ebf4"">enabled</t>", hintHeader];
+				player setVariable ["hintTimer", 3];
 			};
 		}];
 		ctrlbtnGrass ctrlCommit 0;
 		ctrlbtnSync ctrlSetPosition [0.249937, 0.54, 0.150038, 0.08];
 		ctrlbtnSync ctrlSetText "Sync Clothes";
-		ctrlbtnSync ctrlSetTooltip "If someone says you have no clothes when you do, click me.";
+		ctrlbtnSync ctrlSetTooltip "If someone says you have no clothes when you do, click me";
 		ctrlbtnSync ctrlAddEventHandler ["ButtonClick", {
 			player setUnitLoadout (getUnitLoadout player);
+			hintSilent parseText format ["%1Synced clothing</t>", hintHeader];
+			player setVariable ["hintTimer", 3];
 		}];
 		ctrlbtnSync ctrlCommit 0;
 		ctrlbtnZeus ctrlSetPosition [0.424982, 0.54, 0.150038, 0.08];
 		ctrlbtnZeus ctrlSetText "Zeus Menu";
-		ctrlbtnZeus ctrlSetTooltip "Open the Zeus menu";
 		if (JJZeusMenu && (JJAM_isZeus || JJAM_isAdmin)) then {
+			ctrlbtnZeus ctrlSetTooltip "Open the Zeus menu";
 			ctrlbtnZeus ctrlAddEventHandler ["ButtonClick", {
 				[player] remoteExec ["JJAM_fnc_zeusMenu", 2];
 				false
 			}];
 		} else {
-			ctrlDelete ctrlbtnZeus; 
+			ctrlbtnZeus ctrlSetTooltip "Not enough permissions";
+			ctrlbtnZeus ctrlEnable false;
 		};
 		ctrlbtnZeus ctrlCommit 0;
 		ctrlbtnAdmin ctrlSetPosition [0.6, 0.54, 0.15, 0.08];
 		ctrlbtnAdmin ctrlSetText "Admin Menu";
-		ctrlbtnAdmin ctrlSetTooltip "Open the Admin Menu";
 		if (JJAM_isAdmin && JJAdminMenu) then { 
+			ctrlbtnAdmin ctrlSetTooltip "Open the Admin Menu";
 			ctrlbtnAdmin ctrlAddEventHandler ["ButtonClick", {
 				[player] remoteExec ["JJAM_fnc_adminMenu", 2];
 				false
 			}];
 		} else {
-			ctrlDelete ctrlbtnAdmin;
+			ctrlbtnAdmin ctrlSetTooltip "Not enough permissions";
+			ctrlbtnAdmin ctrlEnable false;
 		};
 		ctrlbtnAdmin ctrlCommit 0;
 		ctrlbtnKeys ctrlSetPosition [0.6, 0.42, 0.15, 0.08];
 		ctrlbtnKeys ctrlSetText "Toggle keybinds";
-		ctrlbtnKeys ctrlSetTooltip "Toggle JJAM Keybinds";
+		ctrlbtnKeys ctrlSetTooltip "Not implemented";
+		ctrlbtnKeys ctrlEnable false;
 		ctrlbtnKeys ctrlAddEventHandler ["ButtonClick", {
 			hintSilent "Not implemented yet";
 		}];
 		ctrlbtnKeys ctrlCommit 0;
 	};
 
+};
+
+if (isNil {player getVariable "hintTimer"}) then {
+	player setVariable ["hintTimer", 0];
+};
+
+[] spawn {
+	while {true} do {
+		waitUntil {player getVariable "hintTimer" > 0};
+		JJAM_timer = player getVariable "hintTimer";
+		player setVariable ["hintTimer", 0];
+		JJAM_timeToEnd = time + JJAM_timer;
+		waitUntil {time >= JJAM_timeToEnd};
+		if (player getVariable "hintTimer" == 0) then {hintSilent ""};
+	};
 };
 
 if (!isNil "JJAM_keydown") exitWith {call createPlayerMenu};
@@ -126,3 +159,20 @@ JJAM_keydown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
 JJAM_playerMenuCode = compile playerMenuString;
 owner _player publicVariableClient "JJAM_playerMenuCode";
 [] remoteExec ["JJAM_playerMenuCode", _player];
+
+while {true} do {
+	if (_player call JJAM_fnc_isAdmin) then {
+		JJAM_isAdmin = true;
+	} else {
+		JJAM_isAdmin = false;
+	};
+
+	if (_player in JJAM_zeuslist) then {
+		JJAM_isZeus = true;
+	} else {
+		JJAM_isZeus = false;
+	};
+	owner _player publicVariableClient "JJAM_isAdmin";
+	owner _player publicVariableClient "JJAM_isZeus";
+	uiSleep 1;
+};

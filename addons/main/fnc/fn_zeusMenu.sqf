@@ -12,9 +12,10 @@
 params["_player"];
 
 _zeusState = call BIS_fnc_admin;
+_isAdmin = _player call JJAM_fnc_isAdmin;
 
-if (_zeusState != 2) exitWith {false};
 if (!JJZeusMenu) exitWith {false};
+if (isNull getAssignedCuratorLogic _player && !_isAdmin) exitWith {false};
 
 zeusMenuString= '
 
@@ -36,8 +37,12 @@ with uiNamespace do {
 	ctrlbtnClose ctrlSetTooltip "Close the menu.";
 	ctrlbtnClose ctrlAddEventHandler ["ButtonClick", {
 		params ["_ctrl"];
-		_display = ctrlParent _ctrl;
-		_display closeDisplay 1;
+		if (JJPlayerMenu) then {
+			[] remoteExec ["JJAM_playerMenuCode", player];
+		} else {
+			_display = ctrlParent _ctrl;
+			_display closeDisplay 1;
+		};
 	}];
 	ctrlbtnClose ctrlCommit 0;
 	ctrlbtnHeal ctrlSetPosition [0.249937, 0.42, 0.150038, 0.08];
@@ -54,18 +59,20 @@ with uiNamespace do {
 				[player setDamage 0] remoteExec ["call", _x];
 			} forEach allPlayers;
 		};
+		hintSilent parseText format ["%1You healed all players", hintHeader];
+		player setVariable ["hintTimer", 3];
 	}];
 	ctrlbtnHeal ctrlCommit 0;
 	ctrlbtnFPS ctrlSetPosition [0.424982, 0.42, 0.150038, 0.08];
-	ctrlbtnFPS setText "Toggle FPS";
+	ctrlbtnFPS ctrlsetText "Toggle FPS";
 	ctrlbtnFPS ctrlSetTooltip "Overlays players FPS next to their charecter.";
 	ctrlbtnFPS ctrlAddEventHandler ["ButtonClick", {
-		if (isNil "_fpsToggle") then {
-			_fpsToggle = true;
+		if (isNil {player getVariable "fpsToggle"}) then {
+			player setVariable ["fpsToggle", true];
 		};
 
-		if (_fpsToggle) then {
-			_fpsToggle = false;
+		if (player getVariable "fpsToggle") then {
+			player setVariable ["fpsToggle", false];
 			fpsHandler = addMissionEventHandler ["Draw3D", {
 				{
 					_distance = (ATLToASL (positionCameraToWorld [0,0,0])) distance _x;
@@ -75,8 +82,7 @@ with uiNamespace do {
 						{
 							drawIcon3D
 							["", [1,0.65,0,1], ASLToAGL getPosASL _x, 1, 2, 0, "FPS Error", 2, 0.03, "PuristaMedium", "center"];
-						}
-						else {
+						} else {
 							if (_playerFPS  <20) then 
 							{
 								drawIcon3D
@@ -87,14 +93,21 @@ with uiNamespace do {
 								drawIcon3D
 								["", [0,1,0,0.8], ASLToAGL getPosASL _x, 1, 2, 0, format["%1 FPS: %2", name _x, str _playerFPS], 2, 0.03,"PuristaMedium", "center"];
 							};
-						}
+						};
 					};
 				} forEach allPlayers;
 			}];
 		} else {
-			_fpsToggle = true;
+			player setVariable ["fpsToggle", true];
 			removeMissionEventHandler ["Draw3D", fpsHandler];
 		};
+		if (player getVariable "fpsToggle") then {
+			player setVariable ["toggleText", "disabled"];
+		} else {
+			player setVariable ["toggleText", "enabled"];
+		};
+		hintSilent parseText format ["%1You <t color=""#42ebf4"">%2</t> player FPS", hintHeader, player getVariable "toggleText"];
+		player setVariable ["hintTimer", 3];
 	}];
 	ctrlbtnFPS ctrlCommit 0;	
 };
