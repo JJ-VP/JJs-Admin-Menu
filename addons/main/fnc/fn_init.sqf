@@ -1,24 +1,55 @@
 // Edit these setting to your liking
 // Add Steam64 IDs to JJAM_admins to give specifc users access to the admin menu
-// Add Steam64 IDs to JJAM_superAdmins to give specifc users access to the super admin menu
 // Setting JJLoginAdmins to false won't give admin right to people who have logged in as an admin using the #login in-game command
 // Setting JJPlayerMenu to false will disable to player menu
 // Setting JJZeusMenu to false will disable to zeus menu, The Zeus menu is only accessibly if the player menu is enabled.
 // Setting JJAdminMenu to false will disable the admin menu
-// Setting JJSuperAdminMenu to false will disable the super admin menu
 
-//Private
+
+
+
+//Private (Only the server will know these values)
 JJAM_admins = ["76561198119540788","76500000000000000"];
-JJAM_superAdmins = ["76561198119540788"];
 JJLoginAdmins = true;
 
-//Public
+
+//Public (All connected client will know these values)
 JJPlayerMenu = true;
 JJZeusMenu = true;
 JJAdminMenu = true;
-JJSuperAdminMenu = true;
 
 
+
+
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
+// Don't touch anything below here!
 // Don't touch anything below here!
 // Don't touch anything below here!
 // Don't touch anything below here!
@@ -30,7 +61,6 @@ diag_log text "JJAM: Server Init started";
 publicVariable "JJPlayerMenu";
 publicVariable "JJZeusMenu";
 publicVariable "JJAdminMenu";
-publicVariable "JJSuperAdminMenu";
 publicVariable "JJAM_isAdmin";
 
 hintHeader = "<t color='#41f48c' size='2' font='PuristaBold'>JJ's Player Menu</t><br />-------- -_- --------<br /><br />";
