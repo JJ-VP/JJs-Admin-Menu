@@ -1,0 +1,8 @@
+.vscode/
+.github/
+.idea/
+*.biprivatekey
+*.log
+*.pbo
+*.pbo.bak
+*.png
