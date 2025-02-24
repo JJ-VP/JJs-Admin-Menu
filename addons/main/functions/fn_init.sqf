@@ -56,9 +56,11 @@ JJAdminMenu = true;
 // Don't touch anything below here!
 // Don't touch anything below here!
 
-//Exit it mod is being ran by anything apart from a server (hosted or dedicated)
-if (!isServer) exitWith {diag_log text "[JJAM] Executed by client. This addon is designed to be ran by the server!";};
-diag_log text "[JJAM] Loading started!";
+private _fileName = "fn_init";
+JJAM_logLevel = 2;
+//Exit if mod is being ran by anything apart from a server (hosted or dedicated)
+if (!isServer) exitWith {[1, "Executed by client. This addon is designed to be ran by a server!", _fileName] call JJAM_fnc_log;};
+[2, "Loading started", _fileName] call JJAM_fnc_log;
 
 publicVariable "JJPlayerMenu";
 publicVariable "JJZeusMenu";
@@ -66,11 +68,11 @@ publicVariable "JJAdminMenu";
 
 //Code that will be ran by each client that connect to the server
 JJAM_init = {
-	if (isDedicated) exitWith {};
+	if (!hasInterface) exitWith {};
 	//use spawn to pass code to scheduler (execution time is uncertan(allows sleeping))
 	0 spawn {
-		diag_log text "[JJAM] JJ's Admin Menu is enabled on this server!";
-		diag_log text "[JJAM] Init started!";
+		[2, "JJ's Admin Menu is enabled on this server!", "fn_init", [true, player]] remoteExec ["JJAM_fnc_log", 2];
+		[2, "Init Started!", "fn_init", [true, player]] remoteExec ["JJAM_fnc_log", 2];
 		[player] remoteExec ["JJAM_fnc_isAdmin", 2];
 		if ((roleDescription player) find "Engineer" >= 0) then {
 			player setVariable ["ace_isEngineer", 1, true];
@@ -93,14 +95,14 @@ JJAM_init = {
 			0 spawn JJAM_fnc_loop_fps;
 		};
 		0 spawn JJAM_fnc_loop_rapid;
-		diag_log text "JJAM: Init done!";
+		[2, "Init Finished!", "fn_init", [true, player]] remoteExec ["JJAM_fnc_log", 2];
 	};
 };
 publicVariable "JJAM_init";
 remoteExec ["JJAM_init", -2, true];
 
 waitUntil { time > 0 };
-diag_log text "[JJAM] Loading done!";
+[2, "Loading Done!", _fileName] call JJAM_fnc_log;
 while {true} do {
 	JJAM_zeuslist = [];
 	{

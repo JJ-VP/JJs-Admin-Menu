@@ -16,11 +16,6 @@ if (!(_player isKindOf "CAManBase")) exitWith {};
 _hint = "";
 
 //Check if the target player is in a vehicle or not and set the _object variable suitably
-// if (objectParent player isEqualTo objNull) then {
-// 	_object = player;
-// } else {
-// 	_object = objectParent player;
-// };
 _object = [objectParent _player, _player] select (objectParent _player isEqualTo objNull);
 
 //Main code

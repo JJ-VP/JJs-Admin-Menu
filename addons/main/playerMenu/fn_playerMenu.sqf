@@ -17,7 +17,8 @@ if (!JJPlayerMenu) exitWith {false};
 
 playerMenuString = '
 
-diag_log text "JJAM: PlayerMenu started!";
+private _fileName = "fn_playerMenu";
+[2, "PlayerMenu Started!", _fileName] call JJAM_fnc_log;
 createPlayerMenu = {
 	with uiNamespace do {
 		JJZeusMenu = missionNamespace getVariable "JJZeusMenu";
